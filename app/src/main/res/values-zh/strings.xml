@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">关键字提醒</string>
+    <string name="keywords">关键字</string>
+    <string name="websites">网址</string>
+    <string name="keyword_hint">请输入关键字</string>
+    <string name="website_hint">请输入网址</string>
+    <string name="alert_method">提醒方法</string>
+    <string name="email">电子邮箱</string>
+    <string name="notification">推送</string>
+    <string name="set_alert">设置提醒</string>
+    <string name="remove_keyword">移除关键字</string>
+    <string name="add_keyword">添加关键字</string>
+    <string name="remove_website">移除网址</string>
+    <string name="add_website">添加网址</string>
+    <string name="email_hint">请输入电子邮箱</string>
+</resources>

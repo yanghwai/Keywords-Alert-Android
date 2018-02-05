@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Keywords Alert</string>
+    <string name="keywords">Keywords</string>
+    <string name="websites">Websites</string>
+    <string name="keyword_hint">Please enter a keyword</string>
+    <string name="website_hint">Please enter a website</string>
+    <string name="alert_method">Alert Method</string>
+    <string name="email">Email</string>
+    <string name="notification">Notification</string>
+    <string name="set_alert">Set Alert</string>
+    <string name="remove_keyword">remove keyword</string>
+    <string name="add_keyword">add keyword</string>
+    <string name="remove_website">remove website</string>
+    <string name="add_website">add website</string>
+    <string name="email_hint">Please enter an email</string>
+    <string name="results">results</string>
+    <string name="resultsII">results:</string>
+    <string name="title">title</string>
+    <string name="notification_title">New updates</string>
+    <string name="notification_text">Keywords has updated</string>
+    <string name="NOTIFICATION_CHANNEL_ID">my_ch_01</string>
+    <string name="timer">Timer</string>
+</resources>
