@@ -1,11 +1,11 @@
 package com.example.justforfun.keywordsalert;
 
-/**
- * Created by Jinghao Qiao on 2018/1/29.
- */
 
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +13,12 @@ import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -33,11 +34,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-
-import android.support.v4.app.NotificationCompat;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -47,16 +43,18 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> keywords;
     private ArrayList<String> websites;
     private String email;
+    private boolean emailOption=false;
+    private boolean popupOption=false;
     private HashMap<String,String> result= new HashMap<>();
     public HashMap<String,String> oldDict= new HashMap<>();
     public HashMap<String,String> newDict= new HashMap<>();
     public HashMap<String,String> updatesDict= new HashMap<>();
     private MyService timerService;
-    private static int checkInterval;
+    private static int checkInterval;  // notification time interval
 
     public static int getInterval(){
         return checkInterval;
-    };
+    }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             WebsiteSearch wbs= new WebsiteSearch();
-            ArrayList<HashMap<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites,email!=null, true, email);
+            ArrayList<HashMap<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites,emailOption, popupOption, email);
             newDict=newAndUpdates.get(0);
             updatesDict= newAndUpdates.get(1);
             Log.i("get results", String.valueOf(updatesDict.size()));
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             {
                 showResult();
-                CheckBox checkNotification= (CheckBox)findViewById(R.id.check_Notification);
+                CheckBox checkNotification= findViewById(R.id.check_Notification);
                 if( checkNotification.isChecked() &&  updatesDict.size()>0)
                 {
                     sendNotification("New updates", String.valueOf(updatesDict.size())+" new article(s) found!");//"New article updates", String.valueOf(updatesDict.size())+" article(s) found.");
@@ -184,9 +182,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupKeywordUI(){
-        final EditText editKeyword = (EditText) findViewById(R.id.keyword);
-        ImageButton addKeyword = (ImageButton) findViewById(R.id.add_keyword);
-        final LinearLayout keywordContainer = (LinearLayout) findViewById(R.id.keywords_container);
+        final EditText editKeyword = findViewById(R.id.keyword);
+        ImageButton addKeyword = findViewById(R.id.add_keyword);
+        final LinearLayout keywordContainer = findViewById(R.id.keywords_container);
 
         keywords.add(editKeyword.getText().toString());
 
@@ -248,9 +246,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupWebsitesUI(){
-        final EditText editWebsite = (EditText) findViewById(R.id.website);
-        ImageButton addWebsite = (ImageButton) findViewById(R.id.add_website);
-        final LinearLayout websiteContainer = (LinearLayout) findViewById(R.id.website_container);
+        final EditText editWebsite =  findViewById(R.id.website);
+        ImageButton addWebsite =  findViewById(R.id.add_website);
+        final LinearLayout websiteContainer = findViewById(R.id.website_container);
 
 
         websites.add(editWebsite.getText().toString());
@@ -311,10 +309,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupEmailUI(){
-        final CheckBox checkEmail = (CheckBox)findViewById(R.id.check_Email);
-        CheckBox checkNotification = (CheckBox)findViewById(R.id.check_Notification);
-        final LinearLayout emailContainer = (LinearLayout) findViewById(R.id.email_container);
+    private void setupEmailUI()  // email option settings
+    {
+        final CheckBox checkEmail = findViewById(R.id.check_Email);
+        emailOption=checkEmail.isChecked();
+        final LinearLayout emailContainer =  findViewById(R.id.email_container);
 
         checkEmail.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -322,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
                 if(checkEmail.isChecked()){
                     View view = getLayoutInflater().inflate(R.layout.email_item,null);
                     emailContainer.addView(view);
-                    final EditText emailEdit = (EditText) findViewById(R.id.email);
+                    final EditText emailEdit =  findViewById(R.id.email);
                     emailEdit.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -347,9 +346,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setupPopupUI()
+    {
+        final CheckBox checkNotification = findViewById(R.id.check_Notification);
+        popupOption=checkNotification.isChecked();
+    }
+
+
     private void setupButtonsUI(){
-        Button setAlert = (Button) findViewById(R.id.setAlert);
-        Button results = (Button) findViewById(R.id.results);
+        Button setAlert = findViewById(R.id.setAlert);
+        Button results = findViewById(R.id.results);
         //TODO Set Alert call
         setAlert.setOnClickListener(new View.OnClickListener() {
             @Override

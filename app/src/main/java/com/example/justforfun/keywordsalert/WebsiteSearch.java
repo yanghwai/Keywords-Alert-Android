@@ -11,14 +11,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 /**
  * Created by yangh on 2018-02-03.
+ * modified on 03-25
  */
 
-public class WebsiteSearch {
-    HashMap<String, String> updateDict (HashMap<String,String> oldDict, HashMap<String,String> newDict)
+class WebsiteSearch {
+    private HashMap<String, String> updateDict (HashMap<String,String> oldDict, HashMap<String,String> newDict)
     {
         HashMap<String, String> res= new HashMap<>();
 
@@ -30,9 +32,9 @@ public class WebsiteSearch {
         return res;
     }
 
-    HashMap<String, String> checkWebsites(HashSet<String> keywords, HashSet<String> websites)
+    private HashMap<String, String> checkWebsites(HashSet<String> keywords, HashSet<String> websites)
     {
-        HashMap<String, String> updatedTopic= new HashMap<String, String>();
+        HashMap<String, String> updatedTopic= new HashMap<>();
         for (String url: websites)
         {
             if(url.length()==0)
@@ -65,29 +67,32 @@ public class WebsiteSearch {
         return updatedTopic;
     }
 
-    boolean isValidEmail(String emailAddr)
+    private boolean isValidEmail(String emailAddr)
     {
-        //TODO email address validate
-        return emailAddr.length()>=5;
+        final String emailPattern="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        return Pattern.compile(emailPattern).matcher(emailAddr).matches();
+        //return emailAddr.length()>=5;
     }
 
-    void sendEmailAlert(HashMap<String, String> contentMap, String emailAddr)
+    private void sendEmailAlert(HashMap<String, String> contentMap, String emailAddr)
     {
 
         GMailSender sender= new GMailSender("lithiumHack2018", "hack6666");
 
-        String mssg="";
+        StringBuilder mssgStr=new StringBuilder();
+        //String mssg="";
 
         Integer index=1;
 
         for( Map.Entry<String, String> entry: contentMap.entrySet())
         {
-            mssg+= index.toString()+ ". "+ entry.getKey()+ "\n" + entry.getValue()+ "\n\n";
+            mssgStr.append(index).append(". ").append(entry.getKey()).append("\n").append(entry.getValue()).append("\n\n");
+          //  mssg+= index.toString()+ ". "+ entry.getKey()+ "\n" + entry.getValue()+ "\n\n";
             index++;
         }
 
         try {
-            sender.sendMail("Topic updates", mssg, "lithiumHack2018@gmail.com", emailAddr);
+            sender.sendMail("Topic updates", mssgStr.toString(), "lithiumHack2018@gmail.com", emailAddr);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -111,13 +116,13 @@ public class WebsiteSearch {
         if (updatedEntries.size()>0)
         {
             if (emailOption && isValidEmail(emailAddr))
-                System.out.println("call send email "+String.valueOf(emailOption));
-            sendEmailAlert(updatedEntries, emailAddr);
-
+            {
+                System.out.println("call send email ");
+                sendEmailAlert(updatedEntries, emailAddr);
+            }
         }
 
         return res;
     }
-
 
 }

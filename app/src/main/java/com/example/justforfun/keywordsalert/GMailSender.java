@@ -1,8 +1,5 @@
 package com.example.justforfun.keywordsalert;
 
-/**
- * Created by yangh on 2018-02-03.
- */
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,7 +27,7 @@ public class GMailSender extends javax.mail.Authenticator {
         Security.addProvider(new com.example.justforfun.keywordsalert.JSSEProvider());
     }
 
-    public GMailSender(String user, String password) {
+     GMailSender(String user, String password) {
         this.user = user;
         this.password = password;
 
@@ -52,7 +49,7 @@ public class GMailSender extends javax.mail.Authenticator {
         return new PasswordAuthentication(user, password);
     }
 
-    public synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {
+    synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {
         try{
             MimeMessage message = new MimeMessage(session);
             DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));
@@ -65,7 +62,7 @@ public class GMailSender extends javax.mail.Authenticator {
                 message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));
             Transport.send(message);
         }catch(Exception e){
-
+            e.printStackTrace();
         }
     }
 
@@ -73,7 +70,7 @@ public class GMailSender extends javax.mail.Authenticator {
         private byte[] data;
         private String type;
 
-        public ByteArrayDataSource(byte[] data, String type) {
+        ByteArrayDataSource(byte[] data, String type) {
             super();
             this.data = data;
             this.type = type;
