@@ -14,9 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -44,8 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> keywords;
     private List<String> websites;
     private String email;
-    private boolean emailOption;
-    private boolean popupOption;
+
     private Map<String,String> result= new ConcurrentHashMap<>();
     public Map<String,String> oldDict= new ConcurrentHashMap<>();
     public Map<String,String> newDict= new ConcurrentHashMap<>();
@@ -56,6 +53,16 @@ public class MainActivity extends AppCompatActivity {
 
     public static int getInterval(){
         return checkInterval;
+    }
+
+    private boolean checkEmailBox(){
+       CheckBox emailBox = findViewById(R.id.check_Email);
+       return emailBox.isChecked();
+    }
+
+    private boolean checkPush(){
+        CheckBox pushBox = findViewById(R.id.check_Notification);
+        return pushBox.isChecked();
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -90,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
         setupEmailUI();
         setupPopupUI();
         setupButtonsUI();
-
     }
+
     private void setupTimer(){
         checkInterval = Integer.parseInt(((EditText)findViewById(R.id.checking_interval)).getText().toString());
     }
@@ -109,39 +116,33 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             WebsiteSearch wbs= new WebsiteSearch();
+            boolean emailOption = checkEmailBox();
+            boolean popupOption = checkPush();
             Log.i("email option check",String.valueOf(emailOption));
-            Log.i("email addr", email);
             Log.i("pull option",String.valueOf(popupOption));
             List<Map<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites,emailOption, email);
             newDict=newAndUpdates.get(0);
             updatesDict= newAndUpdates.get(1);
             oldDict=newDict;
 
-            handler.sendEmptyMessage(0);
-
-        }
-    };
-
-    Handler handler= new Handler(){
-        @Override
-        public void handleMessage(Message msg)
-        {
-            super.handleMessage(msg);
-            {
-                showResult();
-                CheckBox checkNotification= findViewById(R.id.check_Notification);
-                if( checkNotification.isChecked() &&  updatesDict.size()>0)
-                {
-                    sendNotification("New updates", String.valueOf(updatesDict.size())+" new article(s) found!");
-                    //"New article updates", String.valueOf(updatesDict.size())+" article(s) found.");
-                }
-            }
+            if(popupOption)
+                sendNotification("New updates", String.valueOf(updatesDict.size())+" new article(s) found!");
 
         }
     };
 
     private void sendNotification(String title, String content)
     {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher_round))
+                        .setContentTitle(title)
+                        .setContentText(content)
+                        .setWhen(System.currentTimeMillis())
+                        .setTicker("I am a Notification")
+                        .setDefaults(Notification.DEFAULT_ALL);
+
         NotificationManager mNotifyMgr= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -157,17 +158,6 @@ public class MainActivity extends AppCompatActivity {
                 mNotifyMgr.createNotificationChannel(notificationChannel);
             }
         }
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher_round))
-                        .setContentTitle(title)
-                        .setContentText(content)
-                        .setWhen(System.currentTimeMillis())
-                        .setTicker("I am a Notification")
-                        .setDefaults(Notification.DEFAULT_ALL);
-
 
         Intent resultIntent= new Intent(mContext, MainActivity.class);
         resultIntent.setAction(Intent.ACTION_MAIN);
@@ -312,10 +302,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupEmailUI()  // email option settings
-    {
+    // Email UI
+    private void setupEmailUI() {
         final CheckBox checkEmail = findViewById(R.id.check_Email);
-        emailOption=checkEmail.isChecked();
         final LinearLayout emailContainer =  findViewById(R.id.email_container);
 
         checkEmail.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -346,10 +335,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupPopupUI()
-    {
+    private void setupPopupUI() {
         final CheckBox checkNotification = findViewById(R.id.check_Notification);
-        popupOption=checkNotification.isChecked();
     }
 
 
