@@ -10,7 +10,9 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 
@@ -20,9 +22,9 @@ import java.util.regex.Pattern;
  */
 
 class WebsiteSearch {
-    private HashMap<String, String> updateDict (HashMap<String,String> oldDict, HashMap<String,String> newDict)
+    private Map<String, String> updateDict (Map<String,String> oldDict, Map<String,String> newDict)
     {
-        HashMap<String, String> res= new HashMap<>();
+        Map<String, String> res= new HashMap<>();
 
         for (Map.Entry<String, String> entry : newDict.entrySet()) {
             if (oldDict.get(entry.getKey()) == null) {
@@ -32,9 +34,9 @@ class WebsiteSearch {
         return res;
     }
 
-    private HashMap<String, String> checkWebsites(HashSet<String> keywords, HashSet<String> websites)
+    private Map<String, String> checkWebsites(Set<String> keywords, Set<String> websites)
     {
-        HashMap<String, String> updatedTopic= new HashMap<>();
+        Map<String, String> updatedTopic= new HashMap<>();
         for (String url: websites)
         {
             if(url.length()==0)
@@ -71,10 +73,9 @@ class WebsiteSearch {
     {
         final String emailPattern="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         return Pattern.compile(emailPattern).matcher(emailAddr).matches();
-        //return emailAddr.length()>=5;
     }
 
-    private void sendEmailAlert(HashMap<String, String> contentMap, String emailAddr)
+    private void sendEmailAlert(Map<String, String> contentMap, String emailAddr)
     {
 
         GMailSender sender= new GMailSender("lithiumHack2018", "hack6666");
@@ -99,16 +100,16 @@ class WebsiteSearch {
         }
     }
 
-    ArrayList<HashMap<String,String>> updateAlert( HashMap<String,String> oldDict, ArrayList<String> keywords, ArrayList<String> websites,boolean emailOption, boolean popupOption, String emailAddr)
+    List<Map<String,String>> updateAlert(Map<String,String> oldDict, List<String> keywords, List<String> websites, boolean emailOption, String emailAddr)
     {
-        HashSet<String> keywordsSet= new HashSet<>(keywords);
-        HashSet<String> websitesSet= new HashSet<>(websites);
+        Set<String> keywordsSet= new HashSet<>(keywords);
+        Set<String> websitesSet= new HashSet<>(websites);
 
-        HashMap<String,String> newArticleDict= checkWebsites(keywordsSet, websitesSet);
+        Map<String,String> newArticleDict= checkWebsites(keywordsSet, websitesSet);
         //  old Dictionary data read and store
-        HashMap<String,String> updatedEntries= updateDict(oldDict, newArticleDict);
+        Map<String,String> updatedEntries= updateDict(oldDict, newArticleDict);
 
-        ArrayList<HashMap<String,String>> res= new ArrayList<>();
+        List<Map<String,String>> res= new ArrayList<>();
 
         res.add(newArticleDict);
         res.add(updatedEntries);

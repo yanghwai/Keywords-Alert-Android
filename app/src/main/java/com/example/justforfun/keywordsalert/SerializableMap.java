@@ -1,7 +1,6 @@
 package com.example.justforfun.keywordsalert;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -9,13 +8,13 @@ import java.util.Map;
  */
 
 public class SerializableMap implements Serializable {
-    private HashMap<String, String> map;
+    private Map<String, String> map;
 
-    public HashMap<String, String> getMap(){
+    public Map<String, String> getMap(){
         return map;
     }
 
-    public void setMap(HashMap<String, String> map){
+    public void setMap(Map<String, String> map){
         this.map = map;
     }
 }

@@ -32,23 +32,25 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class MainActivity extends AppCompatActivity {
     private Context mContext;
     private static final int NOTIFICATION_ID=1;
     private static final String NOTIFICATION_CHANNEL_ID= "my_notify_channel";
-    private ArrayList<String> keywords;
-    private ArrayList<String> websites;
+    private List<String> keywords;
+    private List<String> websites;
     private String email;
-    private boolean emailOption=false;
-    private boolean popupOption=false;
-    private HashMap<String,String> result= new HashMap<>();
-    public HashMap<String,String> oldDict= new HashMap<>();
-    public HashMap<String,String> newDict= new HashMap<>();
-    public HashMap<String,String> updatesDict= new HashMap<>();
+    private boolean emailOption;
+    private boolean popupOption;
+    private Map<String,String> result= new ConcurrentHashMap<>();
+    public Map<String,String> oldDict= new ConcurrentHashMap<>();
+    public Map<String,String> newDict= new ConcurrentHashMap<>();
+    public Map<String,String> updatesDict= new ConcurrentHashMap<>();
+
     private MyService timerService;
     private static int checkInterval;  // notification time interval
 
@@ -64,9 +66,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
+        public void onServiceDisconnected(ComponentName componentName) {}
     };
 
     private OnTimerServiceListener onTimerServiceListener = new OnTimerServiceListener() {
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         setupKeywordUI();
         setupWebsitesUI();
         setupEmailUI();
+        setupPopupUI();
         setupButtonsUI();
 
     }
@@ -95,29 +96,25 @@ public class MainActivity extends AppCompatActivity {
         checkInterval = Integer.parseInt(((EditText)findViewById(R.id.checking_interval)).getText().toString());
     }
 
-    private void showResult()
-    {
-        if(result.size()<=50)
-        {
-            for(Map.Entry<String, String> entry: updatesDict.entrySet())
-            {
+    private void showResult() {
+        if (result.size() <= 50) {
+            for (Map.Entry<String, String> entry : updatesDict.entrySet()) {
                 result.put(entry.getKey(), entry.getValue());
             }
-        }
-        else
+        } else
             result = updatesDict;
     }
 
-    Runnable runnable= new Runnable() {
+    private Runnable runnable= new Runnable() {
         @Override
         public void run() {
             WebsiteSearch wbs= new WebsiteSearch();
-            ArrayList<HashMap<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites,emailOption, popupOption, email);
+            Log.i("email option check",String.valueOf(emailOption));
+            Log.i("email addr", email);
+            Log.i("pull option",String.valueOf(popupOption));
+            List<Map<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites,emailOption, email);
             newDict=newAndUpdates.get(0);
             updatesDict= newAndUpdates.get(1);
-            Log.i("get results", String.valueOf(updatesDict.size()));
-            //TODO notification
-
             oldDict=newDict;
 
             handler.sendEmptyMessage(0);
@@ -135,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
                 CheckBox checkNotification= findViewById(R.id.check_Notification);
                 if( checkNotification.isChecked() &&  updatesDict.size()>0)
                 {
-                    sendNotification("New updates", String.valueOf(updatesDict.size())+" new article(s) found!");//"New article updates", String.valueOf(updatesDict.size())+" article(s) found.");
+                    sendNotification("New updates", String.valueOf(updatesDict.size())+" new article(s) found!");
+                    //"New article updates", String.valueOf(updatesDict.size())+" article(s) found.");
                 }
             }
 
@@ -154,7 +152,10 @@ public class MainActivity extends AppCompatActivity {
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
             notificationChannel.enableVibration(true);
-            mNotifyMgr.createNotificationChannel(notificationChannel);
+
+            if (mNotifyMgr != null) {
+                mNotifyMgr.createNotificationChannel(notificationChannel);
+            }
         }
 
         NotificationCompat.Builder mBuilder =
@@ -178,7 +179,9 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        mNotifyMgr.notify(NOTIFICATION_ID, mBuilder.build());
+        if (mNotifyMgr != null) {
+            mNotifyMgr.notify(NOTIFICATION_ID, mBuilder.build());
+        }
     }
 
     private void setupKeywordUI(){
@@ -324,21 +327,18 @@ public class MainActivity extends AppCompatActivity {
                     final EditText emailEdit =  findViewById(R.id.email);
                     emailEdit.addTextChangedListener(new TextWatcher() {
                         @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                        }
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
                         @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                        }
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
                         @Override
                         public void afterTextChanged(Editable editable) {
                             email = emailEdit.getText().toString();
                         }
                     });
-                }else if(!checkEmail.isChecked()){
+                }
+                else{
                     emailContainer.removeAllViews();
                     email = null;
                 }
