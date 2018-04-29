@@ -35,10 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private String email;
     private NotificationUtil notif;
 
-    private Map<String,String> result= new ConcurrentHashMap<>();
     public Map<String,String> oldDict= new ConcurrentHashMap<>();
     public Map<String,String> newDict= new ConcurrentHashMap<>();
-    public Map<String,String> updatesDict= new ConcurrentHashMap<>();
+    public static Map<String,String> updatesDict= new ConcurrentHashMap<>();
 
     private MyService timerService;
     private static int checkInterval;  // notification time interval
@@ -94,15 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupTimer(){
         checkInterval = Integer.parseInt(((EditText)findViewById(R.id.checking_interval)).getText().toString());
-    }
-
-    private void showResult() {
-        if (result.size() <= 50) {
-            for (Map.Entry<String, String> entry : updatesDict.entrySet()) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        } else
-            result = updatesDict;
     }
 
     private Runnable runnable= new Runnable() {
@@ -325,11 +315,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
 
-                final SerializableMap Mymap = new SerializableMap();
-                Mymap.setMap(result);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("map",Mymap);
-                intent.putExtras(bundle);
+//                final SerializableMap Mymap = new SerializableMap();
+//                Mymap.setMap(result);
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("map",Mymap);
+//                intent.putExtras(bundle);
+//                ResultsActivity.results = updatesDict;
                 startActivity(intent);
             }
         });
