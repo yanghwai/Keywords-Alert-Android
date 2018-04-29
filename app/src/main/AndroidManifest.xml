@@ -3,7 +3,6 @@
     package="com.example.justforfun.keywordsalert">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <application
@@ -16,12 +15,11 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Results"></activity>
-        <service android:name="com.example.justforfun.keywordsalert.MyService"></service>
+        <activity android:name=".ResultsActivity"/>
+        <service android:name="com.example.justforfun.keywordsalert.MyService"/>
     </application>
 
 </manifest>

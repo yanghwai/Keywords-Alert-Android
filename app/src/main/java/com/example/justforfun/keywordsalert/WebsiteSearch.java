@@ -13,17 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-
-
-/**
- * Created by yangh on 2018-02-03.
- * modified on 03-25
- */
 
 class WebsiteSearch {
-    private Map<String, String> updateDict (Map<String,String> oldDict, Map<String,String> newDict)
-    {
+    private Map<String, String> updateDict (Map<String,String> oldDict, Map<String,String> newDict) {
         Map<String, String> res= new HashMap<>();
 
         for (Map.Entry<String, String> entry : newDict.entrySet()) {
@@ -34,8 +26,7 @@ class WebsiteSearch {
         return res;
     }
 
-    private Map<String, String> checkWebsites(Set<String> keywords, Set<String> websites)
-    {
+    private Map<String, String> checkWebsites(Set<String> keywords, Set<String> websites) {
         Map<String, String> updatedTopic= new HashMap<>();
         for (String url: websites)
         {
@@ -62,46 +53,15 @@ class WebsiteSearch {
                 e.printStackTrace();
                 Log.e("try crawl error","");
             }
-
         }
-
         System.out.println(updatedTopic.size());
         return updatedTopic;
     }
 
-    private boolean isValidEmail(String emailAddr)
-    {
-        final String emailPattern="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        return Pattern.compile(emailPattern).matcher(emailAddr).matches();
-    }
 
-    private void sendEmailAlert(Map<String, String> contentMap, String emailAddr)
-    {
 
-        GMailSender sender= new GMailSender("lithiumHack2018", "hack6666");
 
-        StringBuilder mssgStr=new StringBuilder();
-        //String mssg="";
-
-        Integer index=1;
-
-        for( Map.Entry<String, String> entry: contentMap.entrySet())
-        {
-            mssgStr.append(index).append(". ").append(entry.getKey()).append("\n").append(entry.getValue()).append("\n\n");
-          //  mssg+= index.toString()+ ". "+ entry.getKey()+ "\n" + entry.getValue()+ "\n\n";
-            index++;
-        }
-
-        try {
-            sender.sendMail("Topic updates", mssgStr.toString(), "lithiumHack2018@gmail.com", emailAddr);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    List<Map<String,String>> updateAlert(Map<String,String> oldDict, List<String> keywords, List<String> websites, boolean emailOption, String emailAddr)
-    {
+    List<Map<String,String>> updateAlert(Map<String,String> oldDict, List<String> keywords, List<String> websites) {
         Set<String> keywordsSet= new HashSet<>(keywords);
         Set<String> websitesSet= new HashSet<>(websites);
 
@@ -113,15 +73,6 @@ class WebsiteSearch {
 
         res.add(newArticleDict);
         res.add(updatedEntries);
-
-        if (updatedEntries.size()>0)
-        {
-            if (emailOption && isValidEmail(emailAddr))
-            {
-                System.out.println("call send email ");
-                sendEmailAlert(updatedEntries, emailAddr);
-            }
-        }
 
         return res;
     }

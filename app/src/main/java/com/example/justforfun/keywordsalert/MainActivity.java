@@ -2,20 +2,12 @@ package com.example.justforfun.keywordsalert;
 
 
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,15 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
-    private Context mContext;
-    private static final int NOTIFICATION_ID=1;
-    private static final String NOTIFICATION_CHANNEL_ID= "my_notify_channel";
+
     private List<String> keywords;
     private List<String> websites;
     private String email;
+    private NotificationUtil notif;
 
     private Map<String,String> result= new ConcurrentHashMap<>();
     public Map<String,String> oldDict= new ConcurrentHashMap<>();
@@ -87,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContext= MainActivity.this;
 
         keywords = new ArrayList<>();
         websites = new ArrayList<>();
@@ -97,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
         setupEmailUI();
         setupPopupUI();
         setupButtonsUI();
+
+        notif = new NotificationUtil(this);
     }
 
     private void setupTimer(){
@@ -116,62 +109,22 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             WebsiteSearch wbs= new WebsiteSearch();
-            boolean emailOption = checkEmailBox();
-            boolean popupOption = checkPush();
+            boolean emailOption = checkEmailBox() && isValidEmail(email);
+            boolean pushOption = checkPush();
             Log.i("email option check",String.valueOf(emailOption));
-            Log.i("pull option",String.valueOf(popupOption));
-            List<Map<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites,emailOption, email);
+            Log.i("pull option",String.valueOf(pushOption));
+            List<Map<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites);
             newDict=newAndUpdates.get(0);
             updatesDict= newAndUpdates.get(1);
             oldDict=newDict;
-
-            if(popupOption)
-                sendNotification("New updates", String.valueOf(updatesDict.size())+" new article(s) found!");
+            notif.sendNotification(emailOption, pushOption, email, updatesDict);
 
         }
     };
 
-    private void sendNotification(String title, String content)
-    {
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher_round))
-                        .setContentTitle(title)
-                        .setContentText(content)
-                        .setWhen(System.currentTimeMillis())
-                        .setTicker("I am a Notification")
-                        .setDefaults(Notification.DEFAULT_ALL);
-
-        NotificationManager mNotifyMgr= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationChannel.setDescription("My Notification channel 1");
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
-            notificationChannel.enableVibration(true);
-
-            if (mNotifyMgr != null) {
-                mNotifyMgr.createNotificationChannel(notificationChannel);
-            }
-        }
-
-        Intent resultIntent= new Intent(mContext, MainActivity.class);
-        resultIntent.setAction(Intent.ACTION_MAIN);
-        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        PendingIntent pendingIntent= PendingIntent.getActivity(mContext,0,resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(pendingIntent);
-
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        if (mNotifyMgr != null) {
-            mNotifyMgr.notify(NOTIFICATION_ID, mBuilder.build());
-        }
+    private boolean isValidEmail(String emailAddr) {
+        final String emailPattern="^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        return Pattern.compile(emailPattern).matcher(emailAddr).matches();
     }
 
     private void setupKeywordUI(){
@@ -370,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
         results.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Results.class);
+                Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
 
                 final SerializableMap Mymap = new SerializableMap();
                 Mymap.setMap(result);

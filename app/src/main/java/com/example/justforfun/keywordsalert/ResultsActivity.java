@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.Map;
 
-public class Results extends AppCompatActivity {
+public class ResultsActivity extends AppCompatActivity {
     private Map<String, String> results;
 
     @Override
@@ -42,7 +42,7 @@ public class Results extends AppCompatActivity {
             View view = getLayoutInflater().inflate(R.layout.result_item, null);
             ((TextView)view.findViewById(R.id.results_title)).setText(result.getKey());
 
-            TextView link= (TextView) view.findViewById(R.id.results_website);
+            TextView link= view.findViewById(R.id.results_website);
             link.setText(result.getValue());
             Linkify.addLinks(link, Linkify.WEB_URLS);
            // ((TextView)view.findViewById(R.id.results_website)).setText(result.getValue());
