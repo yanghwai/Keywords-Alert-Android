@@ -21,8 +21,4 @@
     <string name="NOTIFICATION_CHANNEL_ID">my_ch_01</string>
     <string name="timer">Timer</string>
     <string name="refresh">refresh</string>
-    <string name="alert_keyword">Please enter at least one keyword</string>
-    <string name="alert_website">Please enter at least one website</string>
-    <string name="alert_interval">Please enter an proper checking interval</string>
-    <string name="alert_email">Please enter a valid email address</string>
 </resources>
