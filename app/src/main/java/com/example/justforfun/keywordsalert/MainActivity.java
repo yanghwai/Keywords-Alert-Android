@@ -1,18 +1,10 @@
 package com.example.justforfun.keywordsalert;
 
 
-import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,11 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.justforfun.keywordsalert.models.Result;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private String email;
     private int checkInteval;
     private EditText emailText;
+    private boolean notByEmail, notByNot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,9 +111,11 @@ public class MainActivity extends AppCompatActivity {
                     View view = getLayoutInflater().inflate(R.layout.email_item,null);
                     emailContainer.addView(view);
                     emailText = view.findViewById(R.id.email);
+                    notByEmail = true;
                 }else{
                     emailContainer.removeAllViews();
                     emailText = null;
+                    notByEmail = false;
                 }
             }
         });
@@ -129,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(checkNotification.isChecked()){
-
+                    notByNot = true;
+                }else{
+                    notByNot = false;
                 }
             }
         });
@@ -137,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupButtons(){
         Button setAlert = findViewById(R.id.setAlert);
-        Button results = findViewById(R.id.results);
+        final Button results = findViewById(R.id.results);
 
         setAlert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,17 +202,38 @@ public class MainActivity extends AppCompatActivity {
                             }).show();
                 }
                 else {
-                    for (String keyword : keywords) {
+                    // Todo search the web and get the results.
+                    /*for (String keyword : keywords) {
                         Toast.makeText(MainActivity.this, keyword, Toast.LENGTH_SHORT).show();
                     }
                     for (String website : websites) {
                         Toast.makeText(MainActivity.this, website, Toast.LENGTH_SHORT).show();
                     }
-                    if(email!=null)
+                    if(notByEmail)
                         Toast.makeText(MainActivity.this,email,Toast.LENGTH_SHORT).show();
                     Toast.makeText(MainActivity.this, checkInteval + "", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,notByEmail+"",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,notByNot+"",Toast.LENGTH_SHORT).show();*/
+                    parse();
                 }
             }
         });
+
+        results.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+    private void parse(){
+        List<Result> res = fakeData();
+    }
+    private List<Result> fakeData(){
+        List<Result> results = new ArrayList<>();
+        results.add(new Result("fiber laser","www.IEEE.com"));
+        results.add(new Result("graphene","www.google.com"));
+        return results;
     }
 }
