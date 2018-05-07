@@ -1,9 +1,11 @@
 package com.example.justforfun.keywordsalert;
 
 
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int checkInteval;
     private EditText emailText;
     private boolean notByEmail, notByNot;
+    ArrayList<Result> res;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,9 +215,18 @@ public class MainActivity extends AppCompatActivity {
                     if(notByEmail)
                         Toast.makeText(MainActivity.this,email,Toast.LENGTH_SHORT).show();
                     Toast.makeText(MainActivity.this, checkInteval + "", Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this,notByEmail+"",Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this,notByNot+"",Toast.LENGTH_SHORT).show();*/
-                    parse();
+                    Toast.makeText(MainActivity.this,notByEmail+"",Toast.LENGTH_SHORT).show();*/
+                    Toast.makeText(MainActivity.this,notByNot+"",Toast.LENGTH_SHORT).show();
+                    res = parseAndGetRes();
+                    if(res != null && res.size() != 0){
+                        NotificationUtils notif = new NotificationUtils(MainActivity.this);
+                        if(notByEmail){
+
+                        }
+                        if(notByNot){
+                            notif.sendNotification(res);
+                        }
+                    }
                 }
             }
         });
@@ -223,15 +235,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
+                if(res == null){
+                    intent.putParcelableArrayListExtra(ResultsActivity.KEY_RESULT, new ArrayList<Result>());
+                }else {
+                    intent.putParcelableArrayListExtra(ResultsActivity.KEY_RESULT, res);
+                }
                 startActivity(intent);
             }
         });
     }
-    private void parse(){
-        List<Result> res = fakeData();
-    }
-    private List<Result> fakeData(){
-        List<Result> results = new ArrayList<>();
+    private ArrayList<Result> parseAndGetRes(){
+        ArrayList<Result> results = new ArrayList<>();
         results.add(new Result("fiber laser","www.IEEE.com"));
         results.add(new Result("graphene","www.google.com"));
         return results;

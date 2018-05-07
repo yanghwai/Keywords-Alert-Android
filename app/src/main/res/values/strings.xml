@@ -4,6 +4,7 @@
     <string name="websites">Websites</string>
     <string name="keyword_hint">Please enter a keyword</string>
     <string name="website_hint">Please enter a website</string>
+    <string name="timer_hint">Please set the checking interval (min)</string>
     <string name="alert_method">Alert Method</string>
     <string name="email">Email</string>
     <string name="notification">Notification</string>
@@ -25,4 +26,5 @@
     <string name="alert_website">Please enter at least one website</string>
     <string name="alert_interval">Please enter an proper checking interval</string>
     <string name="alert_email">Please enter a valid email address</string>
+    <string name="results_activity_title">Results:</string>
 </resources>

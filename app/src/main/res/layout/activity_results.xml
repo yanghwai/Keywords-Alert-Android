@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ResultsActivity">
+    <TextView
+        android:id="@+id/results_activity_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/results_activity_title"
+        android:textSize="24dp"/>
     <ListView
         android:id="@+id/results_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/dividerColor"
-        android:dividerHeight="1dp">
+        android:dividerHeight="1dp"
+        android:layout_below="@id/results_activity_title">
 
     </ListView>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
