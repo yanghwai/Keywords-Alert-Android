@@ -1,4 +1,4 @@
-package com.example.justforfun.keywordsalert;
+package com.justforfun.keywordsalert.activity;
 
 
 import android.app.AlertDialog;
@@ -21,17 +21,24 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.justforfun.keywordsalert.R;
+import com.justforfun.keywordsalert.service.MyService;
+import com.justforfun.keywordsalert.service.OnTimerServiceListener;
+import com.justforfun.keywordsalert.util.NotificationUtil;
+import com.justforfun.keywordsalert.util.WebsiteSearch;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<String> keywords;
-    private List<String> websites;
+    private Set<String> keywords;
+    private Set<String> websites;
     private String email;
     private NotificationUtil notif;
 
@@ -79,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        keywords = new ArrayList<>();
-        websites = new ArrayList<>();
+        keywords = new CopyOnWriteArraySet<>();
+        websites = new CopyOnWriteArraySet<>();
 
         setupKeywordUI();
         setupWebsitesUI();
@@ -138,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                keywords.add(0,editKeyword.getText().toString());
+                keywords.add(editKeyword.getText().toString());
             }
         });
 
@@ -203,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                websites.add(0, editWebsite.getText().toString());
+                websites.add(editWebsite.getText().toString());
             }
         });
 
@@ -286,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupButtonsUI(){
         Button setAlert = findViewById(R.id.setAlert);
         Button results = findViewById(R.id.results);
-        //TODO Set Alert call
+        //Set Alert call
         setAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -302,8 +309,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     setupTimer();
-                    // TODO start new thread
-                    Log.i("size of websites", String.valueOf(websites.size()));
+                    Log.i("number of websites", String.valueOf(websites.size()));
                     Toast.makeText(MainActivity.this, "Alert service is on", Toast.LENGTH_LONG).show();
                     bindService(new Intent(MainActivity.this, MyService.class), serviceConnection, Context.BIND_AUTO_CREATE);
                 }
@@ -314,13 +320,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
-
-//                final SerializableMap Mymap = new SerializableMap();
-//                Mymap.setMap(result);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("map",Mymap);
-//                intent.putExtras(bundle);
-//                ResultsActivity.results = updatesDict;
                 startActivity(intent);
             }
         });

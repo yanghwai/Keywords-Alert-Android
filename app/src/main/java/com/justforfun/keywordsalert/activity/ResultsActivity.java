@@ -1,4 +1,4 @@
-package com.example.justforfun.keywordsalert;
+package com.justforfun.keywordsalert.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.justforfun.keywordsalert.R;
 
 import java.util.Map;
 

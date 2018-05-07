@@ -1,4 +1,4 @@
-package com.example.justforfun.keywordsalert;
+package com.justforfun.keywordsalert.util;
 
 import java.io.Serializable;
 import java.util.Map;

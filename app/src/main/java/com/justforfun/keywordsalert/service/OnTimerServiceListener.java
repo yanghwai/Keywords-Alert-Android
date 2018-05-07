@@ -1,4 +1,4 @@
-package com.example.justforfun.keywordsalert;
+package com.justforfun.keywordsalert.service;
 
 
 public interface OnTimerServiceListener {

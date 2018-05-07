@@ -1,4 +1,4 @@
-package com.example.justforfun.keywordsalert;
+package com.justforfun.keywordsalert.util;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,21 +10,24 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+import com.justforfun.keywordsalert.R;
+import com.justforfun.keywordsalert.activity.MainActivity;
+
 import java.util.Map;
 
 
 public class NotificationUtil {
     private Context context;
-    private static Map<String, String> content;
-    private static int NOTIFICATION_ID=1;
+    private Map<String, String> content;
+    private int NOTIFICATION_ID=1;
     private static final String NOTIFICATION_CHANNEL_ID="114514";
 
-    NotificationUtil(Context context){
+    public NotificationUtil(Context context){
         this.context=context;
     }
 
-    void sendNotification(boolean emailOption, boolean pushOption, String email, Map<String, String> content) {
-        NotificationUtil.content = content;
+    public void sendNotification(boolean emailOption, boolean pushOption, String email, Map<String, String> content) {
+        this.content = content;
         if(content.size()==0)
             return;
 

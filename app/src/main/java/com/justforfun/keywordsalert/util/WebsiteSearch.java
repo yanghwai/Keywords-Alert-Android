@@ -1,4 +1,4 @@
-package com.example.justforfun.keywordsalert;
+package com.justforfun.keywordsalert.util;
 
 import android.util.Log;
 
@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class WebsiteSearch {
+public class WebsiteSearch {
+    public WebsiteSearch() {
+    }
+
     private Map<String, String> updateDict (Map<String,String> oldDict, Map<String,String> newDict) {
         Map<String, String> res= new HashMap<>();
 
@@ -54,14 +57,11 @@ class WebsiteSearch {
                 Log.e("try crawl error","");
             }
         }
-        System.out.println(updatedTopic.size());
+
         return updatedTopic;
     }
 
-
-
-
-    List<Map<String,String>> updateAlert(Map<String,String> oldDict, List<String> keywords, List<String> websites) {
+    public List<Map<String,String>> updateAlert(Map<String,String> oldDict, Set<String> keywords, Set<String> websites) {
         Set<String> keywordsSet= new HashSet<>(keywords);
         Set<String> websitesSet= new HashSet<>(websites);
 

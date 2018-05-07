@@ -1,4 +1,4 @@
-package com.example.justforfun.keywordsalert;
+package com.justforfun.keywordsalert.util;
 
 
 import java.io.ByteArrayInputStream;
@@ -24,10 +24,10 @@ public class GMailSender extends javax.mail.Authenticator {
     private Session session;
 
     static {
-        Security.addProvider(new com.example.justforfun.keywordsalert.JSSEProvider());
+        Security.addProvider(new JSSEProvider());
     }
 
-     GMailSender(String user, String password) {
+    public GMailSender(String user, String password) {
         this.user = user;
         this.password = password;
 
@@ -49,7 +49,7 @@ public class GMailSender extends javax.mail.Authenticator {
         return new PasswordAuthentication(user, password);
     }
 
-    synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {
+    public synchronized void sendMail(String subject, String body, String sender, String recipients){
         try{
             MimeMessage message = new MimeMessage(session);
             DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));
@@ -92,7 +92,7 @@ public class GMailSender extends javax.mail.Authenticator {
                 return type;
         }
 
-        public InputStream getInputStream() throws IOException {
+        public InputStream getInputStream(){
             return new ByteArrayInputStream(data);
         }
 
