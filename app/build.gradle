@@ -31,4 +31,5 @@ dependencies {
     implementation files('libs/activation.jar')
     implementation files('libs/additionnal.jar')
     implementation files('libs/jsoup-1.11.2.jar')
+    implementation files('libs/jsoup-1.11.3.jar')
 }

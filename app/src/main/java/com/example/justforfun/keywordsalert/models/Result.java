@@ -39,4 +39,19 @@ public class Result implements Parcelable{
         dest.writeString(title);
         dest.writeString(webLink);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) return false;
+        if(!(obj instanceof Result)){
+            return false;
+        }else{
+            return ((Result) obj).webLink == this.webLink && ((Result) obj).title == this.title;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return (title+webLink).hashCode();
+    }
 }

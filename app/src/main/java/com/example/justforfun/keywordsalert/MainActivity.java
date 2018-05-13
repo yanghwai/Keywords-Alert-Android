@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.justforfun.keywordsalert.models.Result;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -27,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<TextView> keywordsView;
     private ArrayList<TextView> websitesView;
-    private ArrayList<String> keywords;
-    private ArrayList<String> websites;
+    private HashSet<String> keywords;
+    private HashSet<String> websites;
     private String email;
     private int checkInteval;
     private EditText emailText;
@@ -141,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
         setAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                keywords = new ArrayList<>();
-                websites = new ArrayList<>();
+                keywords = new HashSet<>();
+                websites = new HashSet<>();
                 checkInteval = 0;
                 String checkInput = ((EditText)findViewById(R.id.checking_interval)).getText().toString();
 
@@ -215,8 +216,8 @@ public class MainActivity extends AppCompatActivity {
                     if(notByEmail)
                         Toast.makeText(MainActivity.this,email,Toast.LENGTH_SHORT).show();
                     Toast.makeText(MainActivity.this, checkInteval + "", Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this,notByEmail+"",Toast.LENGTH_SHORT).show();*/
-                    Toast.makeText(MainActivity.this,notByNot+"",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,notByEmail+"",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,notByNot+"",Toast.LENGTH_SHORT).show();*/
                     res = parseAndGetRes();
                     if(res != null && res.size() != 0){
                         NotificationUtils notif = new NotificationUtils(MainActivity.this);
