@@ -56,14 +56,6 @@ public class NotificationUtils {
                 .setChannelId(NOTIFICATION_CHANNEL_ID);
         Notification not = mBuilder.build();
 
-
-
-
-        try{
-            sleep(5000);
-        }catch (Exception e){
-
-        }
         notificationManager.notify(9439, not);
     }
 }

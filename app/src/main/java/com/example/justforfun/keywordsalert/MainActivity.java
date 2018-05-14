@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText emailText;
     private boolean notByEmail, notByNot;
     ArrayList<Result> res;
-    int newResNum;
+    public int newResNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
