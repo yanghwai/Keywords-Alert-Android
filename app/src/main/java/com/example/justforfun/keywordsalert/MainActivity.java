@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText emailText;
     private boolean notByEmail, notByNot;
     ArrayList<Result> res;
+    int newResNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,16 +219,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, checkInteval + "", Toast.LENGTH_SHORT).show();
                     Toast.makeText(MainActivity.this,notByEmail+"",Toast.LENGTH_SHORT).show();
                     Toast.makeText(MainActivity.this,notByNot+"",Toast.LENGTH_SHORT).show();*/
-                    res = parseAndGetRes();
-                    if(res != null && res.size() != 0){
-                        NotificationUtils notif = new NotificationUtils(MainActivity.this);
-                        if(notByEmail){
-
-                        }
-                        if(notByNot){
-                            notif.sendNotification(res);
-                        }
-                    }
+                    Toast.makeText(MainActivity.this,getString(R.string.start_search),Toast.LENGTH_LONG).show();
+                    res = new ArrayList<>();
+                    parseAndGetRes();
                 }
             }
         });
@@ -245,10 +239,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private ArrayList<Result> parseAndGetRes(){
-        ArrayList<Result> results = new ArrayList<>();
-        results.add(new Result("fiber laser","www.IEEE.com"));
-        results.add(new Result("graphene","www.google.com"));
-        return results;
+    private void parseAndGetRes(){
+        new Thread(runnable).start();
     }
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            WebsiteSearchUtil wsu = new WebsiteSearchUtil();
+            newResNum = wsu.updateResults(res,keywords,websites);
+            if(newResNum != 0){
+                NotificationUtils notif = new NotificationUtils(MainActivity.this);
+                if(notByEmail){
+
+                }
+                if(notByNot){
+                    notif.sendNotification(res);
+                }
+            }
+        }
+    };
 }
