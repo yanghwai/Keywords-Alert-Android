@@ -29,5 +29,5 @@
     <string name="results_activity_title">Results:</string>
     <string name="channel_name">Keywords Alert notification channel</string>
     <string name="channel_description">Keywords Alert notification channel</string>
-    <string name="start_search">Start searching</string>
+    <string name="start_search">Alert service is on</string>
 </resources>

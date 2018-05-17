@@ -23,7 +23,7 @@ public class NotificationUtils {
 
     public NotificationUtils(Context context){this.context = context;}
 
-    public void sendNotification(ArrayList<Result> results){
+    public void sendNotification(ArrayList<Result> results, int newResNum){
         Intent resultIntent = new Intent(context, ResultsActivity.class);
         resultIntent.putParcelableArrayListExtra(ResultsActivity.KEY_RESULT,results);
         PendingIntent pIntent = PendingIntent.getActivity(context,0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
@@ -44,7 +44,7 @@ public class NotificationUtils {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL_ID);
         mBuilder.setContentTitle("New updates").
-                setContentText(results.size()+" new article(s) ")
+                setContentText(newResNum+" new article(s) ")
                 .setTicker("find new articles")
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.mipmap.ic_launcher)         // Notification必须设置SmallIcon,  ContentTitle和ContentText.

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -22,6 +23,7 @@ import com.example.justforfun.keywordsalert.models.Result;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -166,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // set alert method
-                if(emailText != null && !emailText.getText().toString().equals("")){
+                if(emailText != null){
                     email = emailText.getText().toString();
                 }else{
                     email = null;
@@ -188,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                 }
                             }).show();
-                }else if(emailText !=null && email==null){
+                }else if(emailText !=null && !isValidEmail(email)){
                     new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
                             .setMessage(getString(R.string.alert_email))
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -207,18 +209,6 @@ public class MainActivity extends AppCompatActivity {
                             }).show();
                 }
                 else {
-                    // Todo search the web and get the results.
-                    /*for (String keyword : keywords) {
-                        Toast.makeText(MainActivity.this, keyword, Toast.LENGTH_SHORT).show();
-                    }
-                    for (String website : websites) {
-                        Toast.makeText(MainActivity.this, website, Toast.LENGTH_SHORT).show();
-                    }
-                    if(notByEmail)
-                        Toast.makeText(MainActivity.this,email,Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, checkInteval + "", Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this,notByEmail+"",Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this,notByNot+"",Toast.LENGTH_SHORT).show();*/
                     Toast.makeText(MainActivity.this,getString(R.string.start_search),Toast.LENGTH_LONG).show();
                     res = new ArrayList<>();
                     parseAndGetRes();
@@ -249,14 +239,30 @@ public class MainActivity extends AppCompatActivity {
             WebsiteSearchUtil wsu = new WebsiteSearchUtil();
             newResNum = wsu.updateResults(res,keywords,websites);
             if(newResNum != 0){
-                NotificationUtils notif = new NotificationUtils(MainActivity.this);
-                if(notByEmail){
-
-                }
                 if(notByNot){
-                    notif.sendNotification(res);
+                    NotificationUtils notif = new NotificationUtils(MainActivity.this);
+                    notif.sendNotification(res,newResNum);
+                }
+                if(notByEmail){
+                    try{
+                    EmailUtils emu = new EmailUtils("keywords.alert.new@gmail.com","alert6666");
+                    StringBuilder body=new StringBuilder();
+                    for(int i=0; i<res.size(); i++){
+                        body.append(res.get(i).title+"\n");
+                        body.append(res.get(i).webLink+"\n\n");
+                    }
+                    body.append("Best regards,\n");
+                    body.append("Keywords Alert");
+                    emu.sendMail("keywords alert: "+newResNum+" new articles are found!",body.toString(),"keywords.alert.new@gmail.com",email);
+                    }catch(Exception e){
+                        Log.e("SendMail",e.getMessage(),e);
+                    }
                 }
             }
         }
     };
+    private boolean isValidEmail(String emailAddr) {
+        final String emailPattern="^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        return Pattern.compile(emailPattern).matcher(emailAddr).matches();
+    }
 }
