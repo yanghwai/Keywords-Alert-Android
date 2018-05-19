@@ -30,4 +30,7 @@
     <string name="channel_name">Keywords Alert notification channel</string>
     <string name="channel_description">Keywords Alert notification channel</string>
     <string name="start_search">Alert service is on</string>
+    <string name="feedback_hint">If you have any comment or suggestion, please contact us. Thank you! (*^_^*) </string>
+    <string name="feedback_sent">Your feedback has been sent. Thank you. </string>
+    <string name="feedback_fail">Fail to send the feedback, please try again. Thank you. </string>
 </resources>

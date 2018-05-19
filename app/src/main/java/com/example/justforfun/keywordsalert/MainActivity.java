@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -141,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupButtons(){
         Button setAlert = findViewById(R.id.setAlert);
         final Button results = findViewById(R.id.results);
+        FloatingActionButton fab = findViewById(R.id.feedback);
 
         setAlert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,6 +227,14 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     intent.putParcelableArrayListExtra(ResultsActivity.KEY_RESULT, res);
                 }
+                startActivity(intent);
+            }
+        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, FeedbackActivity.class);
                 startActivity(intent);
             }
         });
