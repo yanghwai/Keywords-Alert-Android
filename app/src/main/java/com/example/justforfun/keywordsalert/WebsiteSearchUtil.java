@@ -1,5 +1,7 @@
 package com.example.justforfun.keywordsalert;
 
+import android.util.Log;
+
 import com.example.justforfun.keywordsalert.models.Result;
 
 import org.jsoup.Jsoup;
@@ -37,6 +39,7 @@ public class WebsiteSearchUtil {
 
     public int updateResults(ArrayList<Result> oldResList,Set<String> keywords, Set<String> websites){
         ArrayList<Result> newResList = checkWebsites(keywords,websites);
+        Log.e("qiao","search and compare");
         int newNum = 0;
         for(Result res:newResList){
             if(!oldResList.contains(res)){

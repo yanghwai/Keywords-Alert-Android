@@ -9,7 +9,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class FeedbackActivity extends AppCompatActivity {
-    boolean sendSucceed = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,25 +31,32 @@ public class FeedbackActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new Thread(runnable).start();
-                if(sendSucceed){
-                    Toast.makeText(FeedbackActivity.this,getString(R.string.feedback_sent),Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(FeedbackActivity.this,getString(R.string.feedback_fail),Toast.LENGTH_LONG).show();
-                }
             }
         });
     }
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            EditText content = findViewById(R.id.content);
+            final EditText content = findViewById(R.id.content);
             if(!content.getText().toString().equals("")){
                 EmailUtils emailUtils = new EmailUtils("keywords.alert.new@gmail.com","alert6666");
                 try {
                     emailUtils.sendMail("Keywords alert feedback",content.getText().toString(),"keywords.alert.new@gmail.com","jinghao.qiao@mail.mcgill.ca");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(FeedbackActivity.this,getString(R.string.feedback_sent),Toast.LENGTH_LONG).show();
+                            content.setText("");
+                        }
+                    });
                 }catch (Exception e){
                     e.printStackTrace();
-                    sendSucceed = false;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(FeedbackActivity.this,getString(R.string.feedback_fail),Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
 

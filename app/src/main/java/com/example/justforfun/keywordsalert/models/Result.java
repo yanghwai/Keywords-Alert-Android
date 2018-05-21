@@ -46,7 +46,7 @@ public class Result implements Parcelable{
         if(!(obj instanceof Result)){
             return false;
         }else{
-            return ((Result) obj).webLink == this.webLink && ((Result) obj).title == this.title;
+            return ((Result) obj).webLink.equals( this.webLink) && ((Result) obj).title.equals(this.title);
         }
     }
 

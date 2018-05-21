@@ -1,11 +1,13 @@
 package com.example.justforfun.keywordsalert;
 
 
-import android.app.NotificationManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -31,14 +33,22 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<TextView> keywordsView;
     private ArrayList<TextView> websitesView;
-    private HashSet<String> keywords;
-    private HashSet<String> websites;
-    private String email;
-    private int checkInteval;
+    public HashSet<String> keywords;
+    public HashSet<String> websites;
+    public String email;
+    public static int checkInteval;
     private EditText emailText;
-    private boolean notByEmail, notByNot;
+    public boolean notByEmail, notByNot;
     ArrayList<Result> res;
     public int newResNum;
+    private MyService myService;
+    private ServiceConnection serviceConnection;
+    private OnTimerServiceListener onTimerServiceListener = new OnTimerServiceListener() {
+        @Override
+        public void getData() {
+            new Thread(runnable).start();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,7 +223,22 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     Toast.makeText(MainActivity.this,getString(R.string.start_search),Toast.LENGTH_LONG).show();
                     res = new ArrayList<>();
-                    parseAndGetRes();
+                    //res.add(new Result("Optical Fiber Communication (OFC)","https://www.osapublishing.org/conference.cfm?meetingid=5"));
+                    //parseAndGetData();
+                    serviceConnection = new ServiceConnection() {
+                        @Override
+                        public void onServiceConnected(ComponentName name, IBinder service) {
+                            myService = ((MyService.TimerBinder) service).getService();
+                            myService.setOnTimerServiceListener(onTimerServiceListener);
+                        }
+
+                        @Override
+                        public void onServiceDisconnected(ComponentName name) {
+
+                        }
+                    };
+
+                    bindService(new Intent(MainActivity.this,MyService.class),serviceConnection, Context.BIND_AUTO_CREATE);
                 }
             }
         });
@@ -239,8 +264,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void parseAndGetRes(){
-        new Thread(runnable).start();
+
+    public static int getCheckInteval(){
+        return checkInteval;
     }
 
     private Runnable runnable = new Runnable() {
@@ -271,8 +297,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    /*private void parseAndGetData(){
+        new Thread(runnable).start();
+    }*/
     private boolean isValidEmail(String emailAddr) {
         final String emailPattern="^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         return Pattern.compile(emailPattern).matcher(emailAddr).matches();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(serviceConnection!=null)
+            unbindService(serviceConnection);
+        myService = null;
     }
 }
