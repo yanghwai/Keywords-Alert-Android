@@ -297,9 +297,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    /*private void parseAndGetData(){
-        new Thread(runnable).start();
-    }*/
+
     private boolean isValidEmail(String emailAddr) {
         final String emailPattern="^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         return Pattern.compile(emailPattern).matcher(emailAddr).matches();
