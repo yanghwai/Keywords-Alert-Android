@@ -10,13 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="@string/title"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:layout_marginTop="8dp"/>
     <TextView
         android:id="@+id/results_website"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="www.IEEE.com"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:autoLink="web"/>
 </LinearLayout>

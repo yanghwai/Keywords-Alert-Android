@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ResultsActivity"/>
-        <service android:name="service.MyService"/>
+        <service android:name=".service.JobSchedulerService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
     </application>
 
 </manifest>

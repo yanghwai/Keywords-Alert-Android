@@ -1,117 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.justforfun.keywordsalert.activity.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        tools:context="com.example.justforfun.keywordsalert.MainActivity">
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
         <TextView
+            android:id="@+id/keywords_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keywords"
-            android:textSize="24dp"/>
+            android:textSize="24sp" />
 
         <LinearLayout
+            android:id="@+id/keyword_module"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_below="@id/keywords_title"
+            android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/keyword"
+                android:inputType="text"
+                android:id="@+id/input_keyword"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/keyword_hint"/>
+                android:hint="@string/keyword_hint" />
 
             <ImageButton
                 android:id="@+id/add_keyword"
-                android:layout_width="24dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/add_keyword"
-                android:src="@drawable/ic_add_black_24dp" />
-
+                android:src="@drawable/ic_add_black_24dp"
+                android:contentDescription="@string/add_keyword" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/keywords_container"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:text="@string/websites"
-            android:textSize="24sp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
-            />
-
-
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <EditText
-                android:id="@+id/website"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/website_hint"/>
-            <ImageButton
-                android:id="@+id/add_website"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_add_black_24dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/add_website"/>
+            android:layout_below="@id/keyword_module"
+            android:orientation="vertical">
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/website_container"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
         <TextView
+            android:id="@+id/websites_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/alert_method"
+            android:layout_below="@id/keywords_container"
             android:layout_marginTop="16dp"
+            android:text="@string/websites"
             android:textSize="24sp" />
 
         <LinearLayout
+            android:id="@+id/websites_module"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/websites_title"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/input_website"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/website_hint"
+                android:inputType="textUri" />
+
+            <ImageButton
+                android:id="@+id/add_website"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/ic_add_black_24dp"
+                android:contentDescription="@string/add_website" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/websites_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/websites_module"
+            android:orientation="vertical"/>
+
+        <TextView
+            android:id="@+id/alert_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/websites_container"
+            android:layout_marginTop="16dp"
+            android:text="@string/alert_method"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:id="@+id/alert_method"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/alert_title"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:paddingTop="16dp">
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_gravity="center_horizontal">
+                android:gravity="center">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/email"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
 
                 <CheckBox
                     android:id="@+id/check_Email"
@@ -124,18 +136,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                >
+                android:gravity="center">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/notification"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
 
                 <CheckBox
                     android:id="@+id/check_Notification"
-                    android:layout_width="24dp"
+                    android:layout_width="21dp"
                     android:layout_height="24dp" />
 
             </LinearLayout>
@@ -146,35 +157,33 @@
             android:id="@+id/email_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_below="@id/alert_method"
+            android:orientation="vertical"/>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/timer_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_marginTop="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/timer"
-                android:textSize="25dp"
-                />
-            <EditText
-                android:id="@+id/checking_interval"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Please set the checking interval (min)"
-                android:inputType="number"/>
-        </LinearLayout>
-
-        <LinearLayout
+            android:layout_below="@id/email_container"
             android:layout_marginTop="16dp"
+            android:text="@string/timer"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/checking_interval"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_below="@+id/timer_title"
+            android:hint="@string/timer_hint"
+            android:inputType="number" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/checking_interval"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -186,7 +195,8 @@
                     android:id="@+id/setAlert"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/set_alert"/>
+                    android:text="@string/set_alert"
+                    android:onClick="onClickStartButton"/>
             </LinearLayout>
 
             <LinearLayout
@@ -199,10 +209,11 @@
                     android:id="@+id/results"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/results"/>
+                    android:text="@string/results"
+                    android:onClick="onClickResultButton"/>
 
             </LinearLayout>
         </LinearLayout>
+    </RelativeLayout>
 
-    </LinearLayout>
 </ScrollView>

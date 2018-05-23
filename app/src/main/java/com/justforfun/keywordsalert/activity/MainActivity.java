@@ -1,334 +1,308 @@
 package com.justforfun.keywordsalert.activity;
 
 
-import android.app.AlertDialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.justforfun.keywordsalert.R;
-import com.justforfun.keywordsalert.service.MyService;
-import com.justforfun.keywordsalert.service.OnTimerServiceListener;
-import com.justforfun.keywordsalert.util.NotificationUtil;
-import com.justforfun.keywordsalert.util.WebsiteSearch;
+import com.justforfun.keywordsalert.entity.Result;
+import com.justforfun.keywordsalert.entity.Setting;
+import com.justforfun.keywordsalert.service.JobSchedulerService;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
-    private Set<String> keywords;
-    private Set<String> websites;
-    private String email;
-    private NotificationUtil notif;
+    private static Setting setting;
 
-    public Map<String,String> oldDict= new ConcurrentHashMap<>();
-    public Map<String,String> newDict= new ConcurrentHashMap<>();
-    public static Map<String,String> updatesDict= new ConcurrentHashMap<>();
+    private List<TextView> keywordsView;
+    private List<TextView> websitesView;
+    private TextView emailTextView;
 
-    private MyService timerService;
-    private static int checkInterval;  // notification time interval
+    private static Set<Result> oldResult;
+    private static Set<Result> newResult;
+    private static Set<Result> diffResult;
 
-    public static int getInterval(){
-        return checkInterval;
+
+    // setters and getters
+
+    public static Set<Result> getOldResult() {
+        return oldResult;
     }
 
-    private boolean checkEmailBox(){
-       CheckBox emailBox = findViewById(R.id.check_Email);
-       return emailBox.isChecked();
+    public static void setOldResult(Set<Result> oldResult) {
+        MainActivity.oldResult = oldResult;
     }
 
-    private boolean checkPush(){
-        CheckBox pushBox = findViewById(R.id.check_Notification);
-        return pushBox.isChecked();
+    public static Set<Result> getNewResult() {
+        return newResult;
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            timerService = ((MyService.TimerBinder) iBinder).getService();
-            timerService.setOnTimerServiceListener(onTimerServiceListener);
-        }
+    public static void setNewResult(Set<Result> newResult) {
+        MainActivity.newResult = newResult;
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {}
-    };
+    public static Set<Result> getDiffResult() {
+        return diffResult;
+    }
 
-    private OnTimerServiceListener onTimerServiceListener = new OnTimerServiceListener() {
-        @Override
-        public void getData() {
-            new Thread(runnable).start();
-        }
-    };
+    public static void setDiffResult(Set<Result> diffResult) {
+        MainActivity.diffResult = diffResult;
+    }
+
+    public static Setting getSetting() {
+        return setting;
+    }
+
+    public static void setSetting(Setting setting) {
+        MainActivity.setting = setting;
+    }
+
+
+    // override Activity methods
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        keywords = new CopyOnWriteArraySet<>();
-        websites = new CopyOnWriteArraySet<>();
+        setupKeywords();
+        setupWebsites();
+        setupAlert();
 
-        setupKeywordUI();
-        setupWebsitesUI();
-        setupEmailUI();
-        setupPopupUI();
-        setupButtonsUI();
+        oldResult = new HashSet<>();
+        newResult = new HashSet<>();
+        diffResult = new HashSet<>();
+        setting = new Setting();
 
-        notif = new NotificationUtil(this);
     }
 
-    private void setupTimer(){
-        checkInterval = Integer.parseInt(((EditText)findViewById(R.id.checking_interval)).getText().toString());
-    }
-
-    private Runnable runnable= new Runnable() {
-        @Override
-        public void run() {
-            WebsiteSearch wbs= new WebsiteSearch();
-            boolean emailOption = checkEmailBox() && isValidEmail(email);
-            boolean pushOption = checkPush();
-            Log.i("email option check",String.valueOf(emailOption));
-            Log.i("pull option",String.valueOf(pushOption));
-            List<Map<String,String>> newAndUpdates= wbs.updateAlert(oldDict, keywords, websites);
-            newDict=newAndUpdates.get(0);
-            updatesDict= newAndUpdates.get(1);
-            oldDict=newDict;
-            notif.sendNotification(emailOption, pushOption, email, updatesDict);
-
-        }
-    };
-
-    private boolean isValidEmail(String emailAddr) {
-        final String emailPattern="^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        return Pattern.compile(emailPattern).matcher(emailAddr).matches();
-    }
-
-    private void setupKeywordUI(){
-        final EditText editKeyword = findViewById(R.id.keyword);
-        ImageButton addKeyword = findViewById(R.id.add_keyword);
-        final LinearLayout keywordContainer = findViewById(R.id.keywords_container);
-
-        keywords.add(editKeyword.getText().toString());
-
-
-        editKeyword.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                keywords.remove(editKeyword.getText().toString());
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                keywords.add(editKeyword.getText().toString());
-            }
-        });
-
-        addKeyword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // create a view
-                final View v = getLayoutInflater().inflate(R.layout.keyword_item, null);
-                keywordContainer.addView(v);
-                final EditText keyword = v.findViewById(R.id.keyword_edit);
-
-                keywords.add(keyword.getText().toString());
-                keyword.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        keywords.remove(keyword.getText().toString());
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        keywords.add(keyword.getText().toString());
-                    }
-                });
-
-                v.findViewById(R.id.remove_keyword).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        keywordContainer.removeView(v);
-                        EditText keyword = v.findViewById(R.id.keyword_edit);
-
-                        keywords.remove(keyword.getText().toString());
-                    }
-                });
-            }
-        });
-    }
-
-    private void setupWebsitesUI(){
-        final EditText editWebsite =  findViewById(R.id.website);
-        ImageButton addWebsite =  findViewById(R.id.add_website);
-        final LinearLayout websiteContainer = findViewById(R.id.website_container);
-
-
-        websites.add(editWebsite.getText().toString());
-
-
-        editWebsite.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                websites.remove(editWebsite.getText().toString());
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                websites.add(editWebsite.getText().toString());
-            }
-        });
-
-        addWebsite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final View v = getLayoutInflater().inflate(R.layout.website_item,null);
-                websiteContainer.addView(v);
-                final EditText website = v.findViewById(R.id.website_edit);
-                websites.add(website.getText().toString());
-
-                website.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        websites.remove(website.getText().toString());
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        websites.add(website.getText().toString());
-                    }
-                });
-
-                v.findViewById(R.id.remove_website).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        websiteContainer.removeView(v);
-                        EditText website = v.findViewById(R.id.website_edit);
-
-                        websites.remove(website.getText().toString());
-                    }
-                });
-            }
-        });
-    }
-
-    // Email UI
-    private void setupEmailUI() {
-        final CheckBox checkEmail = findViewById(R.id.check_Email);
-        final LinearLayout emailContainer =  findViewById(R.id.email_container);
-
-        checkEmail.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(checkEmail.isChecked()){
-                    View view = getLayoutInflater().inflate(R.layout.email_item,null);
-                    emailContainer.addView(view);
-                    final EditText emailEdit =  findViewById(R.id.email);
-                    emailEdit.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-                            email = emailEdit.getText().toString();
-                        }
-                    });
-                }
-                else{
-                    emailContainer.removeAllViews();
-                    email = null;
-                }
-            }
-        });
-    }
-
-    private void setupPopupUI() {
-        final CheckBox checkNotification = findViewById(R.id.check_Notification);
-    }
-
-
-    private void setupButtonsUI(){
-        Button setAlert = findViewById(R.id.setAlert);
-        Button results = findViewById(R.id.results);
-        //Set Alert call
-        setAlert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                String timeStr = ((EditText)findViewById(R.id.checking_interval)).getText().toString();
-
-                if( timeStr.length()==0 || Integer.parseInt(timeStr)==0 ){
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("warning")
-                            .setMessage("Please set a proper time")
-                            .setPositiveButton("ok",null)
-                            .show();
-                }
-                else {
-                    setupTimer();
-                    Log.i("number of websites", String.valueOf(websites.size()));
-                    Toast.makeText(MainActivity.this, "Alert service is on", Toast.LENGTH_LONG).show();
-                    bindService(new Intent(MainActivity.this, MyService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-                }
-            }
-        });
-
-        results.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbindService(serviceConnection);
-        timerService = null;
     }
+
+
+
+    private void setupKeywords(){
+        ImageButton addKeyword = findViewById(R.id.add_keyword);
+        TextView firstKeyword = findViewById(R.id.input_keyword);
+        final LinearLayout keywordContainer = findViewById(R.id.keywords_container);
+
+        keywordsView = new ArrayList<>();
+        keywordsView.add(firstKeyword);
+        addKeyword.setOnClickListener(view -> {
+            final View v = getLayoutInflater().inflate(R.layout.keyword_item,null);
+            keywordContainer.addView(v);
+
+            final EditText keyword = v.findViewById(R.id.keyword_edit);
+            ImageButton removeKeyWord = v.findViewById(R.id.remove_keyword);
+
+            keywordsView.add(keyword);
+            removeKeyWord.setOnClickListener(view1 -> {
+                keywordContainer.removeView(v);
+                keywordsView.remove(keyword);
+            });
+        });
+    }
+
+    private void setupWebsites(){
+        TextView firstWebsite = findViewById(R.id.input_website);
+        ImageButton addWebsite = findViewById(R.id.add_website);
+        final LinearLayout websiteContainer = findViewById(R.id.websites_container);
+
+        websitesView = new ArrayList<>();
+        websitesView.add(firstWebsite);
+        addWebsite.setOnClickListener(view -> {
+            final View v = getLayoutInflater().inflate(R.layout.website_item,null);
+            websiteContainer.addView(v);
+
+            final EditText website = v.findViewById(R.id.website_edit);
+            ImageButton removeWebsite = v.findViewById(R.id.remove_website);
+
+            websitesView.add(website);
+            removeWebsite.setOnClickListener(view1 -> {
+                websitesView.remove(website);
+                websiteContainer.removeView(v);
+            });
+        });
+    }
+
+    private void setupAlert(){
+        final CheckBox checkEmail = findViewById(R.id.check_Email);
+        final CheckBox checkNotification = findViewById(R.id.check_Notification);
+        final LinearLayout emailContainer = findViewById(R.id.email_container);
+
+        checkEmail.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(checkEmail.isChecked()){
+                View view = getLayoutInflater().inflate(R.layout.email_item,null);
+                emailContainer.addView(view);
+                emailTextView = view.findViewById(R.id.email);
+                setting.setEmailOption(true);
+            }else{
+                emailContainer.removeAllViews();
+                emailTextView = null;
+                setting.setEmailOption(false);
+            }
+        });
+        checkNotification.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(checkNotification.isChecked()){
+                setting.setPushOption(true);
+            }else{
+                setting.setPushOption(false);
+            }
+        });
+    }
+
+
+    // save user settings, true if settings are valid
+    private boolean saveSetting(){
+        boolean flag = false;
+        Set<String> keywords = new HashSet<>();
+        Set<String> websites = new HashSet<>();
+
+        // set Timer
+        boolean setTimerResult = setTimer();
+
+        // set keywords
+        for(TextView keyword:keywordsView){
+            if(!keyword.getText().toString().equals(""))
+                keywords.add(keyword.getText().toString());
+        }
+        setting.setKeywords(keywords);
+
+        // set websites
+        for(TextView website:websitesView){
+            if(!website.getText().toString().equals(""))
+                websites.add(website.getText().toString());
+        }
+        setting.setWebsites(websites);
+
+
+        // set alert method
+        if(emailTextView != null && !emailTextView.getText().toString().equals("")){
+            setting.setEmail(emailTextView.getText().toString());
+        }else{
+            setting.setEmail(null);
+        }
+
+        if(keywords.size() == 0){
+            new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+                    .setMessage(getString(R.string.alert_keyword))
+                    .setPositiveButton("Ok", (dialog, which) -> {
+                    }).show();
+        }else if(websites.size() == 0) {
+            new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+                    .setMessage(getString(R.string.alert_website))
+                    .setPositiveButton("Ok", (dialog, which) -> {
+                    }).show();
+        }else if(emailTextView !=null && !isValidEmail(setting.getEmail())){
+            new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+                    .setMessage(getString(R.string.alert_email))
+                    .setPositiveButton("Ok", (dialog, which) -> {
+                    }).show();
+        }
+        else if(!setTimerResult){
+            new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+                    .setMessage(getString(R.string.alert_interval))
+                    .setPositiveButton("Ok", (dialog, which) -> {
+                    }).show();
+        }
+        else{
+            flag=true;
+        }
+
+        return flag;
+    }
+
+
+    // "Set Alert" Button
+    public void onClickStartButton(View view){
+        if(!saveSetting())
+            return;  // exit if settings are invalid
+        Log.d(TAG,">>>Settings are: "+ setting);
+        cancelJob();
+        Log.d(TAG, ">>Main: Setting up scheduler");
+        scheduleJob();
+        Toast.makeText(MainActivity.this, "Alert service is on", Toast.LENGTH_LONG).show();
+    }
+
+    // "Result" Button
+    public void onClickResultButton(View view){
+        ArrayList<Result> resultList;
+        resultList = new ArrayList<>(diffResult);
+
+        Intent intent = new Intent(MainActivity.this, ResultsActivity.class);
+        intent.putParcelableArrayListExtra(ResultsActivity.KEY_RESULT, resultList);
+
+        startActivity(intent);
+    }
+
+    // helper methods
+
+    private void scheduleJob(){
+        ComponentName componentName = new ComponentName(this, JobSchedulerService.class);
+        JobInfo info = new JobInfo.Builder(100, componentName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPeriodic(setting.getTimerMillisecond())
+                .build();
+
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+
+        int resultCode = scheduler.schedule(info);
+        if(resultCode == JobScheduler.RESULT_SUCCESS)
+            Log.d(TAG, "Job scheduled");
+        else
+            Log.d(TAG, "Job scheduling failed");
+    }
+
+    private void cancelJob(){
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        if (scheduler != null) {
+            scheduler.cancel(123);
+            Log.d(TAG, "Job cancelled");
+        }
+    }
+
+    // validate email address using regex
+    private boolean isValidEmail(String email) {
+        final String emailPattern="^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        return Pattern.compile(emailPattern).matcher(email).matches();
+    }
+
+    // validate timer settings and set settings.timerMilliseconds
+    private boolean setTimer(){
+        boolean setResult;
+        String timerStr = ((EditText)findViewById(R.id.checking_interval)).getText().toString();
+        if( timerStr.length()==0 || Integer.parseInt(timerStr)==0 || Integer.parseInt(timerStr)<15){
+            setResult = false;
+        }
+
+        else{
+            setting.setTimerMillisecond(Integer.parseInt(timerStr) * 60 * 1000);
+            setResult = true;
+        }
+
+        return setResult;
+    }
+
 }

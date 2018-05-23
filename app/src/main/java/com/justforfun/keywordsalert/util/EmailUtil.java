@@ -1,6 +1,5 @@
 package com.justforfun.keywordsalert.util;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +9,7 @@ import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -17,7 +17,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-public class GMailSender extends javax.mail.Authenticator {
+public class EmailUtil extends Authenticator {
     private String mailhost = "smtp.gmail.com";
     private String user;
     private String password;
@@ -27,7 +27,7 @@ public class GMailSender extends javax.mail.Authenticator {
         Security.addProvider(new JSSEProvider());
     }
 
-    public GMailSender(String user, String password) {
+    EmailUtil(String user, String password) {
         this.user = user;
         this.password = password;
 
@@ -49,7 +49,7 @@ public class GMailSender extends javax.mail.Authenticator {
         return new PasswordAuthentication(user, password);
     }
 
-    public synchronized void sendMail(String subject, String body, String sender, String recipients){
+    synchronized void sendMail(String subject, String body, String sender, String recipients) {
         try{
             MimeMessage message = new MimeMessage(session);
             DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));
@@ -66,7 +66,7 @@ public class GMailSender extends javax.mail.Authenticator {
         }
     }
 
-    public class ByteArrayDataSource implements DataSource {
+    private class ByteArrayDataSource implements DataSource {
         private byte[] data;
         private String type;
 
@@ -92,7 +92,7 @@ public class GMailSender extends javax.mail.Authenticator {
                 return type;
         }
 
-        public InputStream getInputStream(){
+        public InputStream getInputStream() {
             return new ByteArrayInputStream(data);
         }
 
