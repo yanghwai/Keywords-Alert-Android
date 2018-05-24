@@ -13,9 +13,11 @@ import android.util.Log;
 
 import com.justforfun.keywordsalert.R;
 import com.justforfun.keywordsalert.activity.MainActivity;
+import com.justforfun.keywordsalert.activity.ResultsActivity;
 import com.justforfun.keywordsalert.entity.Result;
 import com.justforfun.keywordsalert.entity.Setting;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 
@@ -93,7 +95,9 @@ public class NotificationUtil {
                         .setContentText(body)
                         .setWhen(System.currentTimeMillis())
                         .setTicker("I am a NotificationUtil")
-                        .setDefaults(android.app.Notification.DEFAULT_ALL);
+                        .setDefaults(android.app.Notification.DEFAULT_ALL)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setAutoCancel(true);
 
         NotificationManager mNotifyMgr= (NotificationManager) context.getSystemService(MainActivity.NOTIFICATION_SERVICE);
 
@@ -112,9 +116,12 @@ public class NotificationUtil {
             }
         }
 
-        Intent resultIntent= new Intent(context, MainActivity.class);
-        resultIntent.setAction(Intent.ACTION_MAIN);
-        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        Intent resultIntent = new Intent(context, ResultsActivity.class);
+        resultIntent.putParcelableArrayListExtra(ResultsActivity.KEY_RESULT,new ArrayList<>(diffResults));
+
+        //Intent resultIntent= new Intent(context, MainActivity.class);
+        //resultIntent.setAction(Intent.ACTION_MAIN);
+        //resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
         PendingIntent pendingIntent= PendingIntent.getActivity(context,0,resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pendingIntent);

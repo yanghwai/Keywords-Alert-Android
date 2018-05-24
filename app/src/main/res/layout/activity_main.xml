@@ -146,7 +146,7 @@
 
                 <CheckBox
                     android:id="@+id/check_Notification"
-                    android:layout_width="21dp"
+                    android:layout_width="24dp"
                     android:layout_height="24dp" />
 
             </LinearLayout>

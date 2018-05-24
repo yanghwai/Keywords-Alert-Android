@@ -79,6 +79,8 @@ public class WebsiteSearch {
         Set<Result> oldResults = MainActivity.getOldResult();
         Set<Result> diffResults = new HashSet<>();
 
+        Log.e("qiao","search and compare");
+
         for(Result result : newResult){
             if(!oldResults.contains(result))
                 diffResults.add(result);
