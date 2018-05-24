@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static Setting setting;
 
