@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        cancelJob();
     }
 
 
@@ -239,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickStartButton(View view){
         if(!saveSetting())
             return;  // exit if settings are invalid
+        oldResult.clear();
         Log.d(TAG,">>>Settings are: "+ setting);
         cancelJob();
         Log.d(TAG, ">>Main: Setting up scheduler");
