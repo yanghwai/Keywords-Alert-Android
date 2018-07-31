@@ -28,6 +28,7 @@ public class NotificationUtils {
         resultIntent.putParcelableArrayListExtra(ResultsActivity.KEY_RESULT,results);
         PendingIntent pIntent = PendingIntent.getActivity(context,0, resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
+
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -43,6 +44,8 @@ public class NotificationUtils {
         }
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL_ID);
+        //NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(context);
+        //Notification.Builder builder = new Notification.Builder(context);
         mBuilder.setContentTitle("New updates").
                 setContentText(newResNum+" new article(s) ")
                 .setTicker("find new articles")

@@ -3,6 +3,8 @@ package com.example.justforfun.keywordsalert;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.widget.ListView;
 
@@ -31,7 +33,13 @@ public class ResultsActivity extends AppCompatActivity {
     }
 
     private void setupUI(List<Result> data) {
-        ListView listView = findViewById(R.id.results_list_view);
-        listView.setAdapter(new ResultsListAdapter(data, this));
+        //ListView listView = findViewById(R.id.results_list_view);
+        //listView.setAdapter(new ResultsListAdapter(data, this));
+        RecyclerView recyclerView = findViewById(R.id.results_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new ResultItemDecoration(
+                getResources().getDimensionPixelOffset(R.dimen.result_spacing)
+        ));
+        recyclerView.setAdapter(new ResultsListAdapter(data,this));
     }
 }

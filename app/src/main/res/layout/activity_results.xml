@@ -12,14 +12,14 @@
         android:layout_height="wrap_content"
         android:text="@string/results_activity_title"
         android:textSize="24dp"/>
-    <ListView
-        android:id="@+id/results_list_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/results_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/dividerColor"
         android:dividerHeight="1dp"
         android:layout_below="@id/results_activity_title">
 
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

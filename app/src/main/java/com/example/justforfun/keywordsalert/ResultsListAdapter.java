@@ -1,45 +1,43 @@
 package com.example.justforfun.keywordsalert;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 
 import com.example.justforfun.keywordsalert.models.Result;
 
 import java.util.List;
 
-public class ResultsListAdapter extends BaseAdapter {
-    private List<Result> data;
-    Context context;
+public class ResultsListAdapter extends RecyclerView.Adapter {
+    List<Result> data;
+    LayoutInflater inflater;
 
     public ResultsListAdapter(List<Result> data, Context context){
         this.data = data;
-        this.context = context;
+        this.inflater = LayoutInflater.from(context);
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.result_item,parent,false);
+        return new ResultViewHolder(view);
     }
 
     @Override
-    public int getCount() {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Result result = data.get(position);
+
+        ResultViewHolder viewHolder = (ResultViewHolder) holder;
+        viewHolder.title.setText(result.title);
+        viewHolder.website.setText(result.webLink);
+    }
+
+    @Override
+    public int getItemCount() {
         return data.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return data.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.result_item,parent,false);
-        ((TextView)view.findViewById(R.id.results_title)).setText(data.get(position).title);
-        ((TextView)view.findViewById(R.id.results_website)).setText(data.get(position).webLink);
-        return view;
     }
 }

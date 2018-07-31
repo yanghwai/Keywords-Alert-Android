@@ -41,7 +41,7 @@ public class MyService extends Service{
                     onTimerServiceListener.getData();
                 }
             };
-            timer.schedule(task, 1000, 1000 * 60 * MainActivity.getCheckInteval());
+            timer.schedule(task, 1000, 1000 * 60 * MainActivity.getCheckInterval());
         }
     }
 
